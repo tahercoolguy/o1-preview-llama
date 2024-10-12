@@ -194,9 +194,25 @@ Respond in JSON format with 'title', 'content', 'next_action' (either 'continue'
     yield steps, total_thinking_time
 
 def main():
-    st.set_page_config(page_title="AI Reasoning Chain", page_icon="🧠", layout="wide")
-    
-    st.title("AI Reasoning Chain: Extended self-reflection and analysis")
+    st.set_page_config(
+        page_title="AI Reasoning Chain",
+        page_icon="🧠",
+        layout="wide",
+        initial_sidebar_state="expanded",
+        menu_items={
+            'Get Help': 'https://saifytech.com',
+            'Report a bug': "https://saifytech.com",
+            'About': "AI Reasoning Chain"
+        }
+    )
+
+    # Add the Google Search Console verification meta tag
+    st.markdown(
+        '<meta name="google-site-verification" content="cnk7ugA-UC7RNx95wQluUNzaVrCG6xRfwVxBj-2NGn4" />',
+        unsafe_allow_html=True
+    )
+
+    st.title("AI Reasoning Chain : MultipleWords")
     
     st.markdown("""
     This application demonstrates an advanced AI reasoning chain with extended self-reflection to improve output accuracy. 
