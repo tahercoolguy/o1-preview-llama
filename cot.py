@@ -116,43 +116,51 @@ def generate_response(prompt, api_choice):
 11. Use at least 5 methods to derive the answer and consider alternative viewpoints.
 12. Be aware of your limitations as an AI and what you can and cannot do.
 
-After every 3 steps, perform a detailed self-reflection on your reasoning so far, considering potential biases and alternative viewpoints."""
+After every 3 steps, perform a detailed self-reflection on your reasoning so far, considering potential biases and alternative viewpoints.
+
+Respond in JSON format with 'title', 'content', 'next_action' (either 'continue', 'reflect', or 'final_answer'), and 'confidence' (a number between 0 and 1) keys."""
 
     messages = [
-        {"role": "user", "content": prompt}
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt},
+        {"role": "assistant", "content": "Thank you! I will now think step by step following my instructions, starting at the beginning after decomposing the problem."}
     ]
     
     steps = []
     step_count = 1
     total_thinking_time = 0
+    min_steps = 20 if api_choice == "Groq (LLAMA 3.1 8b)" else 15
     
     while True:
         start_time = time.time()
         if api_choice == "Groq (LLAMA 3.1 8b)":
-            step_data = make_groq_call(messages, 750)
+            step_data = make_groq_call(messages, 750, is_final_answer=False)
         elif api_choice == "Anthropic (Claude)":
-            step_data = make_anthropic_call(system_prompt, messages, 750)
+            step_data = make_anthropic_call(system_prompt, messages, 750, is_final_answer=False)
             step_data = step_data.model_dump()
         else:  # OpenAI
-            step_data = make_openai_call(messages, 750)
-        
+            step_data = make_openai_call(messages, 750, is_final_answer=False)
         end_time = time.time()
         thinking_time = end_time - start_time
         total_thinking_time += thinking_time
         
-        confidence = step_data.get('confidence', 0.5)
+        # Handle the case where 'confidence' key is not present
+        confidence = step_data.get('confidence', 0.5)  # Default to 0.5 if not present
         
         steps.append((f"Step {step_count}: {step_data.get('title', 'Untitled Step')}", 
                       step_data.get('content', 'No content provided'), 
                       thinking_time, 
                       confidence))
         
-        messages.append({"role": "assistant", "content": json.dumps(step_data)})
+        if api_choice == "Anthropic (Claude)":
+            messages.append({"role": "assistant", "content": json.dumps(step_data)})
+        else:
+            messages.append({"role": "assistant", "content": json.dumps(step_data)})
         
         next_action = step_data.get('next_action', 'continue')
         
-        if next_action == 'final_answer' and step_count < 15:
-            messages.append({"role": "user", "content": "Please continue your analysis with at least 5 more steps before providing the final answer."})
+        if next_action == 'final_answer' and step_count < min_steps:
+            messages.append({"role": "user", "content": f"Please continue your analysis with at least {min_steps - step_count} more steps before providing the final answer."})
         elif next_action == 'final_answer':
             break
         elif next_action == 'reflect' or step_count % 3 == 0:
@@ -174,11 +182,11 @@ After every 3 steps, perform a detailed self-reflection on your reasoning so far
         final_data = final_data.model_dump()
     else:  # OpenAI
         final_data = make_openai_call(messages, 750, is_final_answer=True)
-    
     end_time = time.time()
     thinking_time = end_time - start_time
     total_thinking_time += thinking_time
     
+    # Handle the case where 'confidence' key is not present in final_data
     final_confidence = final_data.get('confidence', 1.0)
     
     steps.append(("Final Answer", final_data.get('content', 'No final answer provided'), thinking_time, final_confidence))
