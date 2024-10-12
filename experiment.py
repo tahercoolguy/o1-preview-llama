@@ -121,12 +121,13 @@ Your goal is to demonstrate a thorough, adaptive, and self-reflective problem-so
 def main():
     st.set_page_config(page_title="g1 prototype", page_icon="🧠", layout="wide")
     
-    st.title("g1: Using Llama-3.1 70b on Groq to create o1-like reasoning chains with extended self-reflection")
+    st.title("MultipleWords : o1 Preview llama")
     
     st.markdown("""
     This is an improved prototype of using prompting to create o1-like reasoning chains with extended self-reflection to improve output accuracy. It now thinks for longer periods and provides more detailed analysis. It is powered by Groq for fast reasoning steps!
                 
-    Open source [repository here](https://github.com/bklieger-groq)
+    Credits:
+    MultipleWords [here](https://multiplewords.com)
     """)
     
     # Text input for user query
