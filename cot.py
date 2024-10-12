@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import groq
 import os
 import json
@@ -194,18 +193,7 @@ Respond in JSON format with 'title', 'content', 'next_action' (either 'continue'
 
     yield steps, total_thinking_time
 
-def add_google_verification():
-    verification_tag = """
-    <head>
-        <meta name="google-site-verification" content="cnk7ugA-UC7RNx95wQluUNzaVrCG6xRfwVxBj-2NGn4" />
-    </head>
-    """
-    components.html(verification_tag, height=0)
-
 def main():
-    # Add the Google Search Console verification meta tag
-    add_google_verification()
-
     st.set_page_config(
         page_title="AI Reasoning Chain",
         page_icon="🧠",
@@ -216,6 +204,12 @@ def main():
             'Report a bug': "https://saifytech.com",
             'About': "AI Reasoning Chain"
         }
+    )
+
+    # Add the Google Search Console verification meta tag
+    st.markdown(
+        '<meta name="google-site-verification" content="cnk7ugA-UC7RNx95wQluUNzaVrCG6xRfwVxBj-2NGn4" />',
+        unsafe_allow_html=True
     )
 
     st.title("AI Reasoning Chain : MultipleWords")
