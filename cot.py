@@ -28,7 +28,7 @@ def make_groq_call(messages, max_tokens, is_final_answer=False):
     for attempt in range(3):
         try:
             response = groq_client.chat.completions.create(
-                model="llama-3.1-8b-instant",
+                model="llama-3.2-1b-preview",
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=0.2,
