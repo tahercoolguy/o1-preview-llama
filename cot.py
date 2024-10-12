@@ -21,6 +21,10 @@ anthropic_client = None
 openai_client = None
 
 def make_groq_call(messages, max_tokens, is_final_answer=False):
+    global groq_client
+    if groq_client is None:
+        return {"title": "Error", "content": "Groq client is not initialized. Please check your API key.", "next_action": "final_answer"}
+    
     for attempt in range(3):
         try:
             response = groq_client.chat.completions.create(
@@ -40,6 +44,15 @@ def make_groq_call(messages, max_tokens, is_final_answer=False):
             time.sleep(1)  # Wait for 1 second before retrying
 
 def make_anthropic_call(system_prompt, messages, max_tokens, is_final_answer=False):
+    global anthropic_client
+    if anthropic_client is None:
+        return StepResponse(
+            title="Error",
+            content="Anthropic client is not initialized. Please check your API key.",
+            next_action="final_answer",
+            confidence=0.5
+        )
+    
     for attempt in range(3):
         try:
             response = anthropic_client.messages.create(
@@ -62,6 +75,10 @@ def make_anthropic_call(system_prompt, messages, max_tokens, is_final_answer=Fal
             time.sleep(1)  # Wait for 1 second before retrying
 
 def make_openai_call(messages, max_tokens, is_final_answer=False):
+    global openai_client
+    if openai_client is None:
+        return {"title": "Error", "content": "OpenAI client is not initialized. Please check your API key.", "next_action": "final_answer"}
+    
     for attempt in range(3):
         try:
             response = openai_client.chat.completions.create(
@@ -229,6 +246,7 @@ def main():
     api_choice = st.radio("Choose AI Provider:", ("Groq (LLAMA 3.1 8b)", "Anthropic (Claude)", "OpenAI (GPT-4 Turbo)"))
     
     # API key input based on selection
+    global groq_client, anthropic_client, openai_client
     api_key = None
     if api_choice == "Groq (LLAMA 3.1 8b)":
         api_key = st.text_input("Enter your Groq API key:", type="password", help="You can obtain a Groq API key from https://console.groq.com/")
