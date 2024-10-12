@@ -1,0 +1,7 @@
+streamlit
+groq
+instructor
+anthropic
+pydantic
+openai
+
