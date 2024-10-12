@@ -28,7 +28,7 @@ def make_groq_call(messages, max_tokens, is_final_answer=False):
     for attempt in range(3):
         try:
             response = groq_client.chat.completions.create(
-                model="llama-3.2-11b-text-preview",
+                model="llama-3.1-70b-versatile",
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=0.2,
@@ -129,7 +129,7 @@ Respond in JSON format with 'title', 'content', 'next_action' (either 'continue'
     steps = []
     step_count = 1
     total_thinking_time = 0
-    min_steps = 20 if api_choice == "Groq (LLAMA 3.1 8b)" else 15
+    min_steps = 20 if api_choice == "Groq (LLAMA 3.1 70b)" else 15
     
     while True:
         start_time = time.time()
