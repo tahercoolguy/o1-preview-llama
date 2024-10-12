@@ -15,4 +15,3 @@ COPY . .
 
 # Command to run the Streamlit app
 CMD ["streamlit", "run", "cot.py", "--server.port=8501", "--server.address=0.0.0.0"]
-
